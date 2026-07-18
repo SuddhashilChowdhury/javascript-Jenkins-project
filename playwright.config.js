@@ -13,7 +13,7 @@ export default defineConfig ({
     reporter : 'html',
   use: {
     browserName : 'webkit' ,
-    headless : false, 
+    headless : true, 
   },
 
 
