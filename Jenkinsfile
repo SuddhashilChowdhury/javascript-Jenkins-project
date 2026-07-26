@@ -29,15 +29,16 @@ pipeline {
         }
 
         stage('Build') {
-            agent{
-                docker{
-            steps {
-                sh 'npm run build'
-            }
-                }
-                
-            }
+    agent {
+        docker {
+            image 'node:20-alpine'
+            reuseNode true
         }
+    }
+    steps {
+        sh 'npm run build'
+    }
+}
         
 
         stage('Archive Build') {
