@@ -26,7 +26,7 @@ pipeline {
                 sh '''
                 node --version
                 npm --version
-                sudo npx playwright install-deps
+                npx playwright install-deps
                 npm ci
                 npm run build
                 npm test
