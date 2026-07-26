@@ -23,10 +23,13 @@ pipeline {
             }
 
             steps {
-                sh 'node --version'
-                sh 'npm --version'
-                sh 'npm ci'
-                sh 'npm test'
+                sh '''
+                 ls -la
+                 node --version
+                 npm --version
+                 npm ci
+                 npm test
+                 '''
             }
         }
     }
