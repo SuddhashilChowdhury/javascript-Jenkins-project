@@ -35,7 +35,7 @@ pipeline {
         stage('Archive Build') {
             steps {
                 archiveArtifacts(
-                    artifacts: 'dist/**',
+                    artifacts: 'playwright-report/**,test-results/**',
                     fingerprint: true,
                     allowEmptyArchive: false
                 )
