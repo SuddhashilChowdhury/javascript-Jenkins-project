@@ -4,49 +4,43 @@ pipeline {
     options {
         timestamps()
         disableConcurrentBuilds()
-    }
-
-    tools {
-        nodejs 'NodeJS-26'
-    }
-
-    environment {
-        NODE_ENV = 'production'
+        skipDefaultCheckout(true)
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install and Build') {
+            agent {
+                docker {
+                    image 'node:20-alpine'
+                    reuseNode true
+                }
+            }
+
             steps {
-                sh 'npm ci'
+                sh '''
+                node --version
+                npm --version
+                npm ci
+                npm run build
+                '''
             }
         }
-
-        stage('Build') {
-    agent {
-        docker {
-            image 'node:20-alpine'
-            reuseNode true
-        }
-    }
-    steps {
-        sh 'npm run build'
-    }
-}
-        
 
         stage('Archive Build') {
             steps {
-                archiveArtifacts artifacts: 'dist/**', fingerprint: true
+                archiveArtifacts(
+                    artifacts: 'dist/**',
+                    fingerprint: true,
+                    allowEmptyArchive: false
+                )
             }
         }
-
     }
 
     post {
