@@ -26,6 +26,7 @@ pipeline {
                 sh '''
                 node --version
                 npm --version
+                npx playwright install
                 npm ci
                 npm run build
                 npm test
