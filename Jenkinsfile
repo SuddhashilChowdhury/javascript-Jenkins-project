@@ -29,7 +29,7 @@ pipeline {
                  npm --version
                  npm ci
                  npm test
-                 test -f 'index.html'
+                test -f 'playwright-report/index.html'
                  '''
             }
         }
