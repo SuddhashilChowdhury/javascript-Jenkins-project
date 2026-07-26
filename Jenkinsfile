@@ -29,6 +29,7 @@ pipeline {
                  npm --version
                  npm ci
                  npm test
+                 test -f 'index.html'
                  '''
             }
         }
