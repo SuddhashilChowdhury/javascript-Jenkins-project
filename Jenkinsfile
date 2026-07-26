@@ -29,10 +29,16 @@ pipeline {
         }
 
         stage('Build') {
+            agent{
+                docker{
             steps {
                 sh 'npm run build'
             }
+                }
+                
+            }
         }
+        
 
         stage('Archive Build') {
             steps {
