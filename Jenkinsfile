@@ -14,48 +14,39 @@ pipeline {
             }
         }
 
-        stage('Install and Build') {
+        stage('Install and Test') {
             agent {
                 docker {
-                    image 'node:20-alpine'
+                    image 'mcr.microsoft.com/playwright:v1.59.1-noble'
                     reuseNode true
                 }
             }
 
             steps {
-                sh '''
-                node --version
-                npm --version
-                npx playwright install-deps
-                npm ci
-                npm run build
-                npm test
-                '''
-            }
-        }
-
-        stage('Archive Build') {
-            steps {
-                archiveArtifacts(
-                    artifacts: 'playwright-report/**,test-results/**',
-                    fingerprint: true,
-                    allowEmptyArchive: false
-                )
+                sh 'node --version'
+                sh 'npm --version'
+                sh 'npm ci'
+                sh 'npm test'
             }
         }
     }
 
     post {
+        always {
+            archiveArtifacts(
+                artifacts: 'playwright-report/**,test-results/**',
+                allowEmptyArchive: true
+            )
+
+            cleanWs()
+        }
+
         success {
-            echo 'Production build completed successfully.'
+            echo 'Playwright tests completed successfully.'
         }
 
         failure {
-            echo 'Build failed.'
-        }
-
-        always {
-            cleanWs()
+            echo 'Playwright tests failed.'
         }
     }
 }
