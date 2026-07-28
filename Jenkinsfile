@@ -42,6 +42,9 @@ pipeline {
                     testResults: 'test-results/junit-results.xml',
                     allowEmptyResults: true
                 )
+            html(
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+            )
             archiveArtifacts(
                 artifacts: 'playwright-report/**,test-results/**',
                 allowEmptyArchive: true
