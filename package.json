@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "mkdir -p build && cp index.html style.css build/",
+    "build": "mkdir -p build && cp index11.html style.css build/",
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "report": "playwright show-report"
