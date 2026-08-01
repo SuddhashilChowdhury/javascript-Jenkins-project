@@ -35,6 +35,12 @@ pipeline {
         }
 
         stage('Deploy') {
+               agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.61.0-noble'
+                    reuseNode true
+                }
+            }
             steps {
                 sh '''
                 npm install netlify-cli
