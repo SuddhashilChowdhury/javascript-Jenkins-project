@@ -34,7 +34,6 @@ pipeline {
                  npm ci
                  npm test
                 test -f 'playwright-report/index.html'
-                 npm run build
                  '''
             }
         }
