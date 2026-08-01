@@ -6,6 +6,9 @@ pipeline {
         disableConcurrentBuilds()
         skipDefaultCheckout(true)
     }
+    environment{
+        NETLIFY_SITE_ID='f5989571-4f17-4e82-b043-8dcad965b6e2'
+    }
 
     stages {
         stage('Checkout') {
