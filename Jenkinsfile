@@ -38,6 +38,24 @@ pipeline {
             }
         }
 
+        stage('Deploy to staging') {
+               agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.61.0-noble'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                npm install netlify-cli
+                npx  netlify --version
+                echo "Deploying to production. Site ID:- $NETLIFY_SITE_ID"
+                npx netlify status
+                npx netlify deploy --dir=build
+                '''
+            }
+        }
+        
         stage('Deploy') {
                agent {
                 docker {
@@ -58,6 +76,7 @@ pipeline {
     }
 
     post {
+
         always {
 
           junit(
