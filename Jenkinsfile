@@ -66,7 +66,7 @@ pipeline {
             }
         }
 
-        stage('Deploy to Production') {
+       /* stage('Deploy to Production') {
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.61.0-noble'
@@ -84,7 +84,7 @@ pipeline {
                         --prod
                 '''
             }
-        }
+        }*/
     }
 
     post {
