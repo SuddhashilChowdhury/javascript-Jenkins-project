@@ -6,12 +6,14 @@ pipeline {
         disableConcurrentBuilds()
         skipDefaultCheckout(true)
     }
-    environment{
-        NETLIFY_SITE_ID='f5989571-4f17-4e82-b043-8dcad965b6e2'
+
+    environment {
+        NETLIFY_SITE_ID = 'f5989571-4f17-4e82-b043-8dcad965b6e2'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -28,74 +30,82 @@ pipeline {
 
             steps {
                 sh '''
-                 ls -la
-                 node --version
-                 npm --version
-                 npm ci
-                 npm test
-                test -f 'playwright-report/index.html'
-                 '''
-            }
-        }
+                    ls -la
+                    node --version
+                    npm --version
 
-        stage('Deploy to staging') {
-               agent {
-                docker {
-                    image 'mcr.microsoft.com/playwright:v1.61.0-noble'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                npm install netlify-cli
-                npx  netlify --version
-                echo "Deploying to production. Site ID:- $NETLIFY_SITE_ID"
-                npx netlify status
-                npx netlify deploy --dir=build
+                    npm ci
+                    npm test
+
+                    test -f playwright-report/index.html
                 '''
             }
         }
-        
-        stage('Deploy') {
-               agent {
+
+        stage('Deploy to Staging') {
+            agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.61.0-noble'
                     reuseNode true
                 }
             }
+
             steps {
                 sh '''
-                npm install netlify-cli
-                npx  netlify --version
-                echo "Deploying to production. Site ID:- $NETLIFY_SITE_ID"
-                npx netlify status
-                npx netlify deploy --dir=build --prod
+                    npm install netlify-cli
+
+                    npx netlify --version
+                    npx netlify status
+
+                    echo "Deploying preview to Site ID: $NETLIFY_SITE_ID"
+
+                    npx netlify deploy \
+                        --dir=build \
+                        --site="$NETLIFY_SITE_ID"
+                '''
+            }
+        }
+
+        stage('Deploy to Production') {
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.61.0-noble'
+                    reuseNode true
+                }
+            }
+
+            steps {
+                sh '''
+                    echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+
+                    npx netlify deploy \
+                        --dir=build \
+                        --site="$NETLIFY_SITE_ID" \
+                        --prod
                 '''
             }
         }
     }
 
     post {
-
         always {
+            junit(
+                testResults: 'test-results/junit-results.xml',
+                allowEmptyResults: true
+            )
 
-          junit(
-                    testResults: 'test-results/junit-results.xml',
-                    allowEmptyResults: true
-                )
-            
-                publishHTML(
-                    [allowMissing: false, 
-                    alwaysLinkToLastBuild: false, 
-                    icon: '', 
-                    keepAll: false, 
-                    reportDir: 'playwright-report', 
-                    reportFiles: 'index.html', 
-                    reportName: 'Playwright HTML Report',
-                     reportTitles: '', 
-                     useWrapperFileDirectly: true]
-                     )
-            
+            publishHTML([
+                allowMissing: false,
+                alwaysLinkToLastBuild: false,
+                icon: '',
+                keepAll: false,
+                reportDir: 'playwright-report',
+                reportFiles: 'index.html',
+                reportName: 'Playwright HTML Report',
+                reportTitles: '',
+                useWrapperFileDirectly: true
+            ])
+
             archiveArtifacts(
                 artifacts: 'playwright-report/**,test-results/**',
                 allowEmptyArchive: true
@@ -105,11 +115,11 @@ pipeline {
         }
 
         success {
-            echo 'Playwright tests completed successfully.'
+            echo 'Pipeline completed successfully.'
         }
 
         failure {
-            echo 'Playwright tests failed.'
+            echo 'Pipeline failed.'
         }
     }
 }
